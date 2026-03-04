@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foto Astra oferta marzec</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white !important; }
+            @page { margin: 1cm; }
+        }
+        .print-only { display: none; }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #fef3c7; }
+        ::-webkit-scrollbar-thumb { background: #92400e; border-radius: 10px; }
+        
+        /* Animacja wejścia okienka */
+        .animate-modal { animation: modalIn 0.2s ease-out; }
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-slate-900">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        const ALL_PRODUCTS = [
+          // Kawa Ziarnista
+          { id: 101, name: "Lavazza Qualita Rossa 1kg", category: "Kawa Ziarnista", price: 93.00, img: "https://a.allegroimg.com/s720/110652/3294d12e471e80004df2bbaeccb2/Kawa-ziarnista-mieszana-Lavazza-Qualita-Rossa-1000-g", desc: "Mieszanka Arabiki i Robusty o intensywnym smaku. Skład: Arabica, Robusta. Pochodzenie: Włochy. Data ważności: 12.2025." },
+          { id: 102, name: "Motta Lounge Bar Classico 1kg", category: "Kawa Ziarnista", price: 68.00, img: "https://a.allegroimg.com/s720/11961e/ea254ee344f9a25864d7ae785f9b/Motta-Lounge-Bar-Classico-kawa-ziarnista-1000-g", desc: "Klasyczna włoska kawa ziarnista. Idealna do espresso. Skład: Starannie wyselekcjonowane ziarna mieszane. Data ważności: 10.2025." },
+          { id: 103, name: "Pellini La Crema del Caffe 1kg", category: "Kawa Ziarnista", price: 59.90, img: "https://a.allegroimg.com/s720/111b2c/cc37a22f4d2b89a252dbac1088a6/Kawa-ziarnista-Pellini-1000-g", desc: "Wysoka zawartość kofeiny, idealna do ekspresów. Gęsta crema. Skład: Blend Arabica/Robusta. Data ważności: 09.2025." },
+          { id: 104, name: "Lavazza Qualita Oro 1kg", category: "Kawa Ziarnista", price: 68.90, img: "https://a.allegroimg.com/s720/11094e/e37a02294faca6af5d94f50f4b77/Kawa-ziarnista-Arabica-Lavazza-Qualita-Oro-1000-g", desc: "100% Arabica, słodki i aromatyczny smak. Skład: 100% Arabica. Data ważności: 11.2025." },
+          { id: 105, name: "Malongo Petits Producteurs 1kg", category: "Kawa Ziarnista", price: 190.00, img: "https://a.allegroimg.com/s720/116bdf/972b19a9404b84b37086cbbe4dc8/Kawa-ziarnista-Malongo-1000g-Arabika-Petits-Producteurs", desc: "Kawa ziarnista Arabika z certyfikatem sprawiedliwego handlu. Skład: Arabica premium. Data ważności: 01.2026." },
+          { id: 106, name: "Vergnano Aroma Mio Robusto 1kg", category: "Kawa Ziarnista", price: 69.90, img: "https://a.allegroimg.com/s720/11f36c/3b875da045989939d83487846418/Kawa-ziarnista-mieszana-Vergnano-Aroma-Mio-Robusto-1000-g", desc: "Wyrazista mieszanka ziarnista Vergnano. Wysoka zawartość Robusty. Data ważności: 08.2025." },
+          { id: 107, name: "Caffe Cagliari Gran Caffe 500g", category: "Kawa Ziarnista", price: 49.90, img: "https://a.allegroimg.com/s720/113053/254b8b0d4cd1a77e8f8c1837d083/Kawa-ziarnista-Arabica-Caffe-Cagliari-Gran-Caffe-kawa-ziarnista-500-g", desc: "Aromatyczna kawa ziarnista Arabica z palarni w Modenie. Data ważności: 07.2025." },
+          { id: 108, name: "MEO Bio Intense 500g", category: "Kawa Ziarnista", price: 79.90, img: "https://a.allegroimg.com/s720/116a26/a8bcef9a4068a68368f355275d27/MEO-Bio-Intense-100-Arabica-500-g-kawa-ziarnista", desc: "Organiczna kawa ziarnista MEO Bio Intense. Skład: 100% Arabica Bio. Data ważności: 10.2025." },
+          { id: 109, name: "Malongo Petits Producteurs 500g", category: "Kawa Ziarnista", price: 109.90, img: "https://a.allegroimg.com/s720/11a7f1/078b01bd453bb1b416855c696b3d/Kawa-ziarnista-Arabica-Malongo-Petits-Producteurs-500-g", desc: "Arabica z certyfikatem Fair Trade. Delikatna i szlachetna. Data ważności: 12.2025." },
+
+          // Kawa Mielona
+          { id: 201, name: "illy Classico 100% Arabica 250g", category: "Kawa Mielona", price: 32.75, img: "https://a.allegroimg.com/s720/11697d/f0797e874952929ca4d980eedda7/Kawa-mielona-illy-Moka-Classico-100-Arabika-250g", desc: "Kultowa kawa mielona w puszce. Skład: 100% Arabica. Pochodzenie: Włochy. Data ważności: 02.2026." },
+          { id: 203, name: "Caffe Vergnano Granaroma 250g", category: "Kawa Mielona", price: 20.00, img: "https://a.allegroimg.com/s128/1112ab/ae3f4937488bbd59b3601b813ac1/Kawa-mielona-Caffe-Vergnano-Granaroma-250-g-EAN-GTIN-8001800001961", desc: "Wyrazista mieszanka o bogatym aromacie. Skład: Arabica/Robusta. Data ważności: 11.2025." },
+          { id: 204, name: "Lavazza Dek Classico 250g", category: "Kawa Mielona", price: 26.90, img: "https://a.allegroimg.com/s128/1116b1/523240f248fb8e1a0dd466987273/Kawa-mielona-bezkofeinowa-LAVAZZA-DEK-250g-wloska", desc: "Pełny smak kawy bez kofeiny. Skład: Mieszanka bezkofeinowa. Data ważności: 12.2025." },
+          { id: 205, name: "Segafredo Intermezzo 250g", category: "Kawa Mielona", price: 17.00, img: "https://a.allegroimg.com/s720/1107b1/3f9f023c4df7aaf0f294665102e2/Kawa-mielona-Segafredo-Intermezzo-250g", desc: "Klasyczna włoska kawa do codziennego picia. Wyrazisty charakter. Data ważności: 01.2026." },
+          { id: 206, name: "Kimbo Espresso Napoletano 250g", category: "Kawa Mielona", price: 24.00, img: "https://a.allegroimg.com/s720/11e40a/5fdab7ee4405939afca0356dbb33/Kimbo-Espresso-Napoletano-kawa-mielona-250g", desc: "Mocno palona, w stylu neapolitańskim. Skład: Mieszanka ziaren. Data ważności: 11.2025." },
+          { id: 207, name: "illy Decaf 250g", category: "Kawa Mielona", price: 32.00, img: "https://a.allegroimg.com/s720/11d129/a5b59e15483fa1fea7c325bd7bc0/Kawa-ziarnista-illy-Decaf-bezkofeinowa-250g", desc: "Najwyższej jakości Arabica bez kofeiny w puszce. Data ważności: 03.2026." },
+          { id: 208, name: "Jacques Vabre Kitale Kenya 250g", category: "Kawa Mielona", price: 28.50, img: "https://a.allegroimg.com/s720/11ff87/7fb63ffc488188e935cdfe569bc5/Jacques-Vabre-Kitale-Kenya-250-g-kawa-mielona-100-arabika", desc: "Wyjątkowa 100% Arabika z Kenii. Skład: 100% Arabica Kenya. Data ważności: 01.2026." },
+          { id: 209, name: "Lavazza Crema e Gusto Ricco 250g", category: "Kawa Mielona", price: 24.50, img: "https://a.allegroimg.com/s720/11e31e/20b8cbad4e43ac96b29128e241fe/Lavazza-Crema-eGusto-Ricco-250g-Kawa-mielona-na-ryneek-zachodni-28-02-2026", desc: "Intensywna mieszanka o bogatym aromacie (Import). Data ważności: 02.2026." },
+          { id: 210, name: "Lavazza Il Mattino 250g", category: "Kawa Mielona", price: 21.50, img: "https://a.allegroimg.com/s720/03bfd8/31c3cd304d95927ba32a89c16107/Kawa-mielona-Lavazza-Il-Mattino-250-g", desc: "Zbalansowana kawa o aksamitnym smaku. Skład: Robusta i Arabica. Data ważności: 01.2026." },
+          { id: 211, name: "Motta Pregiato 100% Arabica 250g", category: "Kawa Mielona", price: 29.90, img: "https://a.allegroimg.com/s720/112007/1935bfe64558b5f515bad0d6c86c/Motta-Pregiato-kawa-mielona-100-Arabica-250-gr", desc: "Włoska kawa mielona klasy premium. Skład: 100% Arabica. Data ważności: 02.2026." },
+          { id: 212, name: "Pellini No 42 Tradizionale 250g", category: "Kawa Mielona", price: 23.90, img: "https://a.allegroimg.com/original/1ec435/44d378fb46c5a4b1ecb0b07da0d1", desc: "Klasyczna receptura Pellini, idealna do kawiarki. Data ważności: 12.2025." },
+          { id: 213, name: "Carte Noire 250g", category: "Kawa Mielona", price: 27.90, img: "https://a.allegroimg.com/s720/114773/e999f6d545e1bfc3969e2279c7cd/Kawa-mielona-Carte-Noire-250-g", desc: "Ikoniczna francuska kawa mielona o głębokim smaku. Data ważności: 02.2026." },
+          { id: 214, name: "Caffe Vergnano Espresso Casa 250g", category: "Kawa Mielona", price: 22.50, img: "https://a.allegroimg.com/s720/11b35e/0eb8ee8e40698c244c4e569a2309/Kawa-mielona-Caffe-Vergnano-EspressoCasa-250-g", desc: "Tradycyjna włoska mieszanka do domowego espresso. Data ważności: 11.2025." },
+          { id: 215, name: "Lavazza Dek Intenso 250g", category: "Kawa Mielona", price: 27.90, img: "https://a.allegroimg.com/s720/11181b/16a9806c4704b97d11f87ad07224/Kawa-mielona-Lavazza-DEK-INTENSO-bezkofeinowa-250g", desc: "Bezkofeinowa o wysokiej intensywności. Skład: Arabica/Robusta bez kofeiny. Data ważności: 01.2026." },
+          { id: 216, name: "Caffe Vergnano 100% Arabica 250g", category: "Kawa Mielona", price: 34.00, img: "https://a.allegroimg.com/s720/1166b1/c239ecf84d12a738b8cd61c17479/Kawa-mielona-Caffe-Vergnano-100-Arabica-250-g", desc: "Elegancka puszka, 100% Arabica najwyższej jakości. Data ważności: 03.2026." },
+          { id: 217, name: "Malongo Petits Producteurs 250g", category: "Kawa Mielona", price: 39.50, img: "https://a.allegroimg.com/s720/118187/f959769d48c4ba914c9d7a717894/Kawa-mielona-Malongo-Petit-Producteurs-250-g", desc: "Fair Trade Arabica w puszce próżniowej. Data ważności: 02.2026." },
+          { id: 218, name: "Malongo Petits Producteurs 500g", category: "Kawa Mielona", price: 69.90, img: "https://a.allegroimg.com/s128/118faf/1451e2e0409aab1eca44025f0c78/Kawa-mielona-Malongo-Petit-Producteurs-500-g", desc: "Fair Trade Arabica w puszce próżniowej. Data ważności: 02.2026." },
+          // Kawa Rozpuszczalna / Instant
+          { id: 301, name: "Nescafe Latte Kit Kat 273g", category: "Rozpuszczalna / Instant", price: 36.50, img: "https://a.allegroimg.com/s720/119f78/c1482585475fb895bf34d3b8ef88/NESCAFE-LATTE-KIT-KAT-KAWA-INSTANT-LATTE-O-SMAKU-BATONIKA-KIT-KAT-273G", desc: "Latte o smaku batonika Kit Kat. Skład: Cukier, kawa, aromat. Data ważności: 09.2025." },
+          { id: 302, name: "Nescafe Cappuccino Vanille 276g", category: "Rozpuszczalna / Instant", price: 34.90, img: "https://a.allegroimg.com/s720/118b7f/abae4054479b874fbe262fa25d05/Kawa-cappuccino-Nescafe-Vanille-276-g", desc: "Waniliowe cappuccino z pianką. Data ważności: 10.2025." },
+          { id: 303, name: "Nescafe Cappuccino 280g", category: "Rozpuszczalna / Instant", price: 33.50, img: "https://a.allegroimg.com/s720/117108/74366dd4416d88e58b7b96826c63/Kawa-rozpuszczalna-Nescafe-Cappuccino-250-g-IT", desc: "Klasyczne włoskie cappuccino. Data ważności: 11.2025." },
+          { id: 304, name: "Nescafe Cappuccino Słony karmel 261g", category: "Rozpuszczalna / Instant", price: 35.90, img: "https://a.allegroimg.com/s720/113e8e/354b0c7c4818bd1756c23c78dada/NESCAFE-CAPPUCCINO-CARAMEL-BEURRE-SALE-KAWA-CAPPUCCINO-261G", desc: "Cappuccino o smaku słonego karmelu. Data ważności: 09.2025." },
+          { id: 305, name: "Nescafe Bezkofeinowa 200g", category: "Rozpuszczalna / Instant", price: 44.80, img: "https://a.allegroimg.com/s720/11c453/128be8a545d28e2d108899a7bf66/Kawa-rozpuszczalna-bezkofeinowa-Nescafe-200-g", desc: "100% kawa rozpuszczalna bez kofeiny. Data ważności: 12.2025." },
+          { id: 306, name: "Nescafe Per Latte 100g", category: "Rozpuszczalna / Instant", price: 29.90, img: "https://a.allegroimg.com/s720/111483/2cbc74d745928665943a36748c43/Nescafe-per-latte-100-g-kawa-rozpuszczalna", desc: "Kawa idealna do mieszania z mlekiem. Data ważności: 08.2025." },
+          { id: 307, name: "Nescafe Nes 200g", category: "Rozpuszczalna / Instant", price: 38.00, img: "https://a.allegroimg.com/s720/1192ba/eae2d0f548dd981032733ce22039/Kawa-rozpuszczalna-Nescafe-Nes-200-g", desc: "Klasyczna kawa rozpuszczalna Nes. Data ważności: 12.2025." },
+          { id: 308, name: "Nestle Ricore Original 100g", category: "Rozpuszczalna / Instant", price: 24.50, img: "https://a.allegroimg.com/s720/116f2c/04bcf9f248568d22f07a6e3400ba/Nestle-Ricore-Original-100-g-kawa-zbozowa", desc: "Mieszanka kawy i cykorii. Skład: Cykoria 60%, Kawa 40%. Data ważności: 11.2025." },
+          { id: 309, name: "Nescafe Special Filtre 200g ", category: "Rozpuszczalna / Instant", price: 44.90, img: "https://a.allegroimg.com/s720/11880e/4c5def1845ad82bd0e87657d39c8/Nescafe-Special-Filtre-200-g-kawa-rozpuszczalna-Francja", desc: "Wysokiej jakości kawa Special Filtre (Francja). Data ważności: 01.2026." },
+          { id: 310, name: "Nescafe Selezione 200g ", category: "Rozpuszczalna / Instant", price: 42.00, img: "https://a.allegroimg.com/s720/1197f0/3f3dc5c04651a2046af73bce360c/Nescafe-kawa-rozpuszczalna-200-g-FR", desc: "Selezione - wyselekcjonowana kawa rozpuszczalna. Data ważności: 01.2026." },
+          { id: 311, name: "Nestle Ricore 400g ", category: "Rozpuszczalna / Instant", price: 65.00, img: "https://a.allegroimg.com/s720/11e24c/6e1218494e2992d1a577ef8c57ef/Kawa-rozpuszczalna-Nestle-Ricore-400-g", desc: "Ekonomiczne opakowanie Ricore (kawa z cykorią). Data ważności: 12.2025." },
+          { id: 312, name: "Nestle Ricore Original 260g ", category: "Rozpuszczalna / Instant", price: 53.00, img: "https://a.allegroimg.com/s720/1131de/5ff12a5c45a7be480272da50f59a/Kawa-rozpuszczalna-Nestle-Ricore-Original-puszka-260-g", desc: "Klasyczna Ricore w puszce. Skład: Cykoria, Kawa. Data ważności: 10.2025." },
+          { id: 313, name: "Nescafe Special Filtre 150g ", category: "Rozpuszczalna / Instant", price: 36.90, img: "https://a.allegroimg.com/s720/11348d/1416b16b42b380dcefb1cfa15c2e/Nescafe-Special-Filtre-150-g-kawa-rozpuszczalna-Francja", desc: "Mniejsze opakowanie Special Filtre z rynku francuskiego. Data ważności: 01.2026." },
+          { id: 314, name: "Nestle Ricore Noir Intense 240g", category: "Rozpuszczalna / Instant", price: 56.00, img: "https://a.allegroimg.com/s720/113f27/e58a4d12479f8523d3e4524f90e7/Kawa-rozpuszczalna-Nestle-RICORE-NOIR-INTENSE-240-g", desc: "Intensywna, ciemna wersja Ricore. Więcej smaku kawy. Data ważności: 09.2025." },
+          { id: 315, name: "Nescafe Espresso Original 95g", category: "Rozpuszczalna / Instant", price: 33.99, img: "https://a.allegroimg.com/s720/114536/8b0c5819454e9bd17f50a7e1d44a/Kawa-rozpuszczalna-Nescafe-Espresso-Original-100-Arabika-95g", desc: "100% Arabika w formie rozpuszczalnego espresso z cremą. Data ważności: 02.2026." },
+
+          // Słodycze i Kremy
+          { id: 401, name: "Krem pistacjowy Pisti 1kg", category: "Słodycze i Kremy", price: 99.00, img: "https://a.allegroimg.com/s720/118abb/b37f5a5e49ac896db572a96761dd/Pisti-Pistacchio-oryginalny-krem-pistacjowy-1000g", desc: "Włoski krem z pistacji sycylijskich. Skład: Pistacje (45%), cukier, mleko, oliwa. Data ważności: 08.2025." },
+          { id: 402, name: "La Noix Gaillarde krem orzechowo-migdałowy 1kg", category: "Słodycze i Kremy", price: 85.00, img: "https://a.allegroimg.com/s720/11b559/88f3260e4c3d806b0e902f88349d/La-Noix-Gaillarde-krem-orzechowo-migdalowy-1-kg", desc: "Francuski krem orzechowo-migdałowy najwyższej jakości. Data ważności: 12.2025." },
+          { id: 403, name: "La Noix Gaillarde Extra Pralin 1kg", category: "Słodycze i Kremy", price: 89.00, img: "https://a.allegroimg.com/s720/11dfe4/848619a843c8966b92ae5db60d30/La-Noix-Gaillarde-extra-pralin-krem-orzechowo-migdalowy-1-kg", desc: "Krem pralinowy z kawałkami orzechów. Prawdziwa poezja smaku. Data ważności: 12.2025." },
+          { id: 405, name: "Krem pistacjowy Pisti 200g", category: "Słodycze i Kremy", price: 22.90, img: "https://a.allegroimg.com/s720/112f53/4c957d3f4921b31fbdabf0f8f418/Krem-pistacjowy-Pisti-Crema-Pistacchio-200-g", desc: "Mniejszy słoiczek legendarnego kremu Pisti. 45% pistacji. Data ważności: 08.2025." },
+          { id: 406, name: "Czekolada mleczna Lindt 300g", category: "Słodycze i Kremy", price: 37.00, img: "https://a.allegroimg.com/s720/059543/35728ee44cf39a987754d1fa1398/Czekolada-mleczna-Lindt-300-g", desc: "Duża tabliczka aksamitnej czekolady mlecznej Lindt. Data ważności: 01.2026." },
+          { id: 407, name: "Czekolada Lindt z orzechami 300g", category: "Słodycze i Kremy", price: 38.50, img: "https://a.allegroimg.com/s720/055443/f4a8ecf74ad0b3766fa250d55903/Czekolada-mleczna-z-orzechami-Lindt-300-g", desc: "Lindt Milk z całymi orzechami laskowymi. Data ważności: 01.2026." },
+          { id: 408, name: "Lindt Swiss z rodzynkami i orzechami 300g", category: "Słodycze i Kremy", price: 38.50, img: "https://a.allegroimg.com/s720/05bc4e/ea5df475499d9c3b8ce42c87007a/Lindt-Swiss-czekolada-mleczna-z-rodzynkami-i-orzechami-laskowymi-300-g", desc: "Szwajcarska czekolada z bogactwem bakalii. Data ważności: 01.2026." },
+          { id: 409, name: "Lindt Lindor Biała z migdałami 300g", category: "Słodycze i Kremy", price: 39.00, img: "https://a.allegroimg.com/s720/11f36f/a9ade64c435c9dd8791c959b2982/Lindt-Lindor-Biala-czekolada-z-migdalami-300-g", desc: "Biała czekolada Lindor z chrupiącymi migdałami. Data ważności: 01.2026." },
+          { id: 410, name: "Baton Lindt z nadzieniem pistacjowym 38g", category: "Słodycze i Kremy", price: 7.95, img: "https://a.allegroimg.com/s720/111425/c3c127934968979d5aec934dbcb4/Baton-z-nadzieniem-pistacjowym-Lindt-38g-Wlochy", desc: "Mały batonik Lindt z płynnym środkiem pistacjowym. Data ważności: 09.2025." },
+          { id: 411, name: "Lindt Marcepan w gorzkiej czekoladzie 50g", category: "Słodycze i Kremy", price: 8.90, img: "https://a.allegroimg.com/s720/05efa7/d58cfaf249088c4b8c11914a31bd/Lindt-Marcepan-w-gorzkiej-w-czekoladzie-50g-EAN-GTIN-4000539381003", desc: "Wysokiej jakości marcepan w deserowej czekoladzie. Data ważności: 10.2025." },
+          { id: 412, name: "Lindt Wafer 35g batonik", category: "Słodycze i Kremy", price: 6.50, img: "https://a.allegroimg.com/s720/11a83f/7a35706146d593068d6182cbef62/Lindt-Wafer-35-g-batonik", desc: "Chrupiący wafel przekładany kremem Lindt. Data ważności: 08.2025." },
+          { id: 413, name: "Czekolada mleczna Lindt 100g", category: "Słodycze i Kremy", price: 12.50, img: "https://a.allegroimg.com/s720/114a44/054def744756961482f008400241/Czekolada-mleczna-Lindt-100-g", desc: "Klasyczna czekolada Lindt Milk. Data ważności: 03.2026." },
+          { id: 414, name: "Crispo Jajeczka wielkanocne 500g", category: "Słodycze i Kremy", price: 34.00, img: "https://a.allegroimg.com/s720/1103cc/297729a545a5ac6aa6a38bb170d8/Crispo-jajeczka-wielkanocne-z-czekolady-mlecznej-500-g", desc: "Czekoladowe jajeczka Crispo. Data ważności: 06.2025." },
+          { id: 415, name: "Crispo Jajeczka Ripieni 500g", category: "Słodycze i Kremy", price: 35.50, img: "https://a.allegroimg.com/s720/11ab55/28a8e7b840c3acafe951621f03d2/Crispo-Jajeczka-wielkanocne-cioccolato-al-latte-ripieni-500g", desc: "Nadziewane jajeczka wielkanocne Crispo. Data ważności: 06.2025." },
+
+          // Spiżarnia i Inne
+          { id: 404, name: "Aromat waniliowy En Cuisine 1L", category: "Spiżarnia i Inne", price: 75.00, img: "https://a.allegroimg.com/s720/116e10/3a51188a40e1999077d9b716c2ba/Plynny-aromat-waniliowy-En-Cuisine-1-litr", desc: "Profesjonalny aromat do wypieków. Skład: Aromat waniliowy, nośnik. Data ważności: 12.2026." },
+          { id: 501, name: "Wanilia Bourbon Madagaskar 1 szt", category: "Spiżarnia i Inne", price: 3.99, img: "https://a.allegroimg.com/s720/03ec61/e54cbdff41749cd9d714ce77288c/Wanilia-Bourbon-Madagaskar-laska-1-szt-3-g", desc: "Prawdziwa laska wanilii Bourbon. Długość ok. 15-17cm. Data ważności: 2027." },
+          { id: 502, name: "Kakao Nesquik 1000g", category: "Spiżarnia i Inne", price: 59.00, img: "https://a.allegroimg.com/s720/11cc37/d391f7a440899bcd9298421196a0/Kakao-Nesquik-1000-g", desc: "Rozpuszczalny napój kakaowy z witaminami. Data ważności: 12.2025." },
+          { id: 503, name: "Kakao Van Houten 255g", category: "Spiżarnia i Inne", price: 31.50, img: "https://a.allegroimg.com/s720/11caf5/bf9aaed3432685084058d2f65945/Kakao-Van-Houten-255-g", desc: "Holenderskie ciemne kakao tradycyjne. Skład: 100% Kakao. Data ważności: 2026." },
+          { id: 504, name: "Kakao Van Houten Classic 250g", category: "Spiżarnia i Inne", price: 30.95, img: "https://a.allegroimg.com/s720/1131da/3a25e6a649b68e347eb48291f8b7/Kakao-Van-Houten-250-g", desc: "Klasyczne kakao w proszku. Data ważności: 2026." },
+          { id: 505, name: "Czekolada do picia Nestle 500g", category: "Spiżarnia i Inne", price: 29.00, img: "https://a.allegroimg.com/s720/11a5af/b098cfd24c9f9172cab755e5d6ed/Czekolada mleczna do picia Nestle 500 g", desc: "Słodka czekolada rozpuszczalna do mleka. Data ważności: 09.2025." },
+          { id: 506, name: "Nesquik francuski 490g (FR)", category: "Spiżarnia i Inne", price: 32.00, img: "https://a.allegroimg.com/s720/117095/44e267524cd6b84aa25f422384bb/Nesquik-francuskie-kakao-490-g-FR", desc: "Nesquik z rynku francuskiego, inna receptura. Data ważności: 10.2025." },
+          { id: 507, name: "Nesquik włoski 500g (IT)", category: "Spiżarnia i Inne", price: 32.00, img: "https://a.allegroimg.com/s720/1120d1/04801b7645adbf332ca39de65acc/NESTLE-Nesquik-napoj-kakaowy-500-g-IT", desc: "Klasyczny Nesquik z rynku włoskiego. Data ważności: 10.2025." },
+          { id: 508, name: "Equador kakao ciemne 250g", category: "Spiżarnia i Inne", price: 28.50, img: "https://a.allegroimg.com/s720/119522/75a759ed4797a1f76078e91810bb/Equador-kakao-ciemne-w-proszku-250-g-bez-cukru", desc: "Kakao ciemne bez cukru. Intensywny smak. Data ważności: 12.2026." },
+          { id: 509, name: "Ovomaltine kakao 350g (FR)", category: "Spiżarnia i Inne", price: 39.90, img: "https://a.allegroimg.com/s720/11194f/9b5fc2754a849045383dc79286dc/Ovomaltine-kakao-instant-350-g-FR", desc: "Szwajcarski napój słodowy z kakao. Data ważności: 11.2025." },
+          { id: 510, name: "Poulain Super kakao 1kg (FR)", category: "Spiżarnia i Inne", price: 48.00, img: "https://a.allegroimg.com/s720/119d9d/b233a8ec4e63938c915bc1a8cf42/Poulain-Super-francuskie-rozpuszczalne-kakao-w-proszku-1-kg", desc: "Francuskie kakao rozpuszczalne Poulain. Skład: Cukier, kakao. Data ważności: 01.2026." },
+          { id: 511, name: "Poulain Grand Arome 800g", category: "Spiżarnia i Inne", price: 42.00, img: "https://a.allegroimg.com/s720/118112/b1609d95498eb12273da460b0beb/Poulain-Grand-Arome-francuskie-kakao-slodzone-800g", desc: "Bardzo aromatyczne francuskie kakao. Data ważności: 01.2026." },
+          { id: 512, name: "Dallmayr kakao 1000g", category: "Spiżarnia i Inne", price: 45.00, img: "https://a.allegroimg.com/s720/113935/6388059a42fb90a20160160d3612/Dallmayr-kakao-do-automatow-1000-g", desc: "Profesjonalne kakao do automatów. Skład: Czekolada w proszku. Data ważności: 12.2025." },
+          { id: 513, name: "Czekolada Ristora 1000g", category: "Spiżarnia i Inne", price: 49.00, img: "https://a.allegroimg.com/s720/11dcb4/b5055c9c423fb74fa09b88158992/Czekolada-deserowa-do-picia-Ristora-1000-g", desc: "Włoska gęsta czekolada deserowa do picia. Data ważności: 12.2025." },
+          { id: 514, name: "Poulain Grand Arome 400g", category: "Spiżarnia i Inne", price: 24.50, img: "https://a.allegroimg.com/s720/112c8d/1e3aa1304dd790cf066a1742f175/Poulain-Grand-Arome-francuskie-kakao-slodzone-400g", desc: "Mniejsza puszka aromatycznego kakao Poulain. Data ważności: 01.2026." },
+        ];
+
+        const CATEGORIES = ["Wszystkie", "Kawa Ziarnista", "Kawa Mielona", "Rozpuszczalna / Instant", "Słodycze i Kremy", "Spiżarnia i Inne"];
+
+        const Icon = ({ name, size = 20, className = "" }) => {
+            return <i data-lucide={name} style={{ width: size, height: size }} className={`inline-block align-middle ${className}`}></i>;
+        };
+
+        const App = () => {
+            const [cart, setCart] = useState([]);
+            const [search, setSearch] = useState("");
+            const [category, setCategory] = useState("Wszystkie");
+            const [selectedProduct, setSelectedProduct] = useState(null);
+
+            useEffect(() => {
+                if (window.lucide) window.lucide.createIcons();
+            }, [search, category, cart, selectedProduct]);
+
+            const filtered = useMemo(() => {
+                return ALL_PRODUCTS.filter(p => 
+                    (category === "Wszystkie" || p.category === category) &&
+                    p.name.toLowerCase().includes(search.toLowerCase())
+                );
+            }, [search, category]);
+
+            const addToCart = (product) => {
+                setCart(prev => {
+                    const exists = prev.find(i => i.id === product.id);
+                    if (exists) return prev.map(i => i.id === product.id ? { ...i, qty: i.qty + 1 } : i);
+                    return [...prev, { ...product, qty: 1 }];
+                });
+            };
+
+            const updateQty = (id, delta) => {
+                setCart(prev => prev.map(i => i.id === id ? { ...i, qty: Math.max(0, i.qty + delta) } : i).filter(i => i.qty > 0));
+            };
+
+            const total = cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
+
+            return (
+                <div className="min-h-screen">
+                    {/* MODAL SZCZEGÓŁÓW PRODUKTU */}
+                    {selectedProduct && (
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md no-print" onClick={() => setSelectedProduct(null)}>
+                            <div className="bg-white w-full max-w-2xl rounded-[3rem] overflow-hidden shadow-2xl animate-modal" onClick={e => e.stopPropagation()}>
+                                <div className="flex flex-col md:flex-row">
+                                    <div className="md:w-1/2 bg-stone-100 p-10 flex items-center justify-center border-r border-stone-200">
+                                        <img src={selectedProduct.img} alt={selectedProduct.name} className="max-h-72 object-contain" />
+                                    </div>
+                                    <div className="md:w-1/2 p-10 relative">
+                                        <button onClick={() => setSelectedProduct(null)} className="absolute top-6 right-6 text-stone-300 hover:text-amber-950 transition-colors">
+                                            <Icon name="x-circle" size={36} />
+                                        </button>
+                                        <span className="text-orange-600 font-bold text-xs uppercase tracking-widest">{selectedProduct.category}</span>
+                                        <h2 className="text-2xl font-black text-stone-800 mt-2 leading-tight">{selectedProduct.name}</h2>
+                                        <div className="mt-6 text-stone-600 text-sm leading-relaxed">
+                                            <p className="font-bold text-amber-950 mb-2 border-b border-stone-100 pb-1">Opis i szczegóły:</p>
+                                            {selectedProduct.desc}
+                                        </div>
+                                        <div className="mt-10 flex items-center justify-between">
+                                            <span className="text-3xl font-black text-amber-950">{selectedProduct.price.toFixed(2)} PLN</span>
+                                            <button 
+                                                onClick={() => { addToCart(selectedProduct); setSelectedProduct(null); }}
+                                                className="bg-amber-950 text-white px-8 py-4 rounded-2xl font-bold flex items-center gap-2 hover:bg-orange-600 transition-all shadow-lg active:scale-95"
+                                            >
+                                                <Icon name="plus" size={20} /> Dodaj
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* INTERFEJS STRONY */}
+                    <header className="bg-amber-950 text-white p-6 no-print sticky top-0 z-50">
+                        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+                            <div className="flex items-center gap-4">
+                                <div className="bg-white p-2 rounded-xl text-amber-900 shadow-inner"><Icon name="coffee" size={32} /></div>
+                                <div>
+                                    <h1 className="text-3xl font-black uppercase italic tracking-tighter leading-none">Foto Astra</h1>
+                                    <p className="text-orange-400 text-[10px] font-bold uppercase tracking-widest mt-1">Oferta Marzec 2026</p>
+                                </div>
+                            </div>
+                            <div className="flex-grow max-w-md">
+                                <input 
+                                    type="text" 
+                                    placeholder="Wyszukaj pyszności..." 
+                                    className="w-full bg-amber-900/40 px-6 py-3 rounded-2xl outline-none border-none text-white font-bold placeholder:text-amber-200/50"
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                    </header>
+
+                    <nav className="bg-white border-b no-print sticky top-[100px] z-40 overflow-x-auto">
+                        <div className="max-w-7xl mx-auto px-6 py-4 flex gap-4">
+                            {CATEGORIES.map(cat => (
+                                <button key={cat} onClick={() => setCategory(cat)} className={`px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest whitespace-nowrap border-2 transition-all ${category === cat ? 'bg-amber-950 text-white border-amber-950 shadow-md scale-105' : 'text-stone-400 border-stone-100 hover:bg-stone-50'}`}>{cat}</button>
+                            ))}
+                        </div>
+                    </nav>
+
+                    <main className="max-w-7xl mx-auto p-6 flex flex-col lg:flex-row gap-10 no-print">
+                        <div className="flex-grow">
+                            <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">
+                                {filtered.map(p => (
+                                    <div key={p.id} className="bg-white p-6 rounded-[2.5rem] shadow-sm border border-stone-200 hover:shadow-xl transition-all group flex flex-col">
+                                        <div className="h-48 flex items-center justify-center mb-4 cursor-pointer" onClick={() => setSelectedProduct(p)}>
+                                            <img src={p.img} className="max-h-full object-contain group-hover:scale-110 transition-transform duration-500" />
+                                        </div>
+                                        <h3 className="font-bold text-stone-800 h-12 overflow-hidden mb-4 cursor-pointer hover:text-orange-600 transition-colors leading-tight" onClick={() => setSelectedProduct(p)}>{p.name}</h3>
+                                        <div className="flex justify-between items-center mt-auto">
+                                            <span className="text-2xl font-black text-amber-950">{p.price.toFixed(2)} <small className="text-xs">PLN</small></span>
+                                            <button onClick={() => addToCart(p)} className="bg-amber-950 text-white p-4 rounded-2xl active:scale-90 transition-all hover:bg-orange-600 shadow-md">
+                                                <Icon name="plus" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <aside className="lg:w-96">
+                            <div className="bg-white p-8 rounded-[2.5rem] shadow-2xl border-t-8 border-orange-500 sticky top-40">
+                                <h3 className="text-2xl font-black mb-6">LISTA OFERTOWA</h3>
+                                <div className="space-y-4 mb-8 max-h-[40vh] overflow-y-auto pr-2">
+                                    {cart.length === 0 && <p className="text-stone-400 italic">Lista jest pusta. Dodaj produkty.</p>}
+                                    {cart.map(item => (
+                                        <div key={item.id} className="flex justify-between items-center border-b pb-2">
+                                            <div className="flex-grow pr-4">
+                                                <p className="text-sm font-bold leading-tight">{item.name}</p>
+                                                <p className="text-xs text-orange-600 font-bold">{item.qty} szt. x {item.price.toFixed(2)} PLN</p>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <button onClick={() => updateQty(item.id, -1)} className="p-1 text-red-500"><Icon name="minus-circle" size={18}/></button>
+                                                <button onClick={() => updateQty(item.id, 1)} className="p-1 text-green-500"><Icon name="plus-circle" size={18}/></button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="text-3xl font-black text-right border-t-2 pt-4 mb-6">
+                                    {total.toFixed(2)} <small className="text-sm">PLN</small>
+                                </div>
+                                <button onClick={() => window.print()} className="w-full bg-orange-600 text-white py-6 rounded-2xl font-black text-xl hover:bg-orange-500 shadow-lg active:scale-95 transition-all">POBIERZ PDF</button>
+                                <p className="text-[10px] text-center mt-4 text-stone-400 uppercase font-bold tracking-widest italic leading-tight">W oknie druku wybierz Cel:<br/>Zapisz jako PDF</p>
+                            </div>
+                        </aside>
+                    </main>
+
+                    {/* SZABLON WYDRUKU */}
+                    <div className="print-only p-10 bg-white min-h-screen">
+                        <div className="flex justify-between items-end border-b-8 border-amber-950 pb-8 mb-10">
+                            <div>
+                                <h1 className="text-6xl font-black uppercase italic text-amber-950">Foto Astra</h1>
+                                <p className="text-xl font-bold text-orange-600 uppercase tracking-widest mt-2">Oferta marzec 2026</p>
+                                <p className="text-stone-500 mt-4 font-bold uppercase text-xs">Data wygenerowania: {new Date().toLocaleDateString('pl-PL')}</p>
+                            </div>
+                            <div className="text-right text-stone-600 pb-1">
+                                <p className="font-black text-xl">Tel: 604 533 501</p>
+                                <p className="font-bold">E-mail: fotoastra@wp.pl</p>
+                            </div>
+                        </div>
+
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="bg-stone-100 uppercase text-xs border-b-2 border-stone-800">
+                                    <th className="p-4">Nazwa produktu</th>
+                                    <th className="p-4 text-center">Ilość</th>
+                                    <th className="p-4 text-right">Cena jedn.</th>
+                                    <th className="p-4 text-right">Wartość Brutto</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {cart.map(item => (
+                                    <tr key={item.id} className="border-b text-sm">
+                                        <td className="p-4 font-bold">{item.name}</td>
+                                        <td className="p-4 text-center text-xl font-black italic">{item.qty}</td>
+                                        <td className="p-4 text-right font-bold">{item.price.toFixed(2)} PLN</td>
+                                        <td className="p-4 text-right font-black text-lg">{(item.qty * item.price).toFixed(2)} PLN</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                            <tfoot>
+                                <tr className="border-t-4 border-amber-950">
+                                    <td colSpan="3" className="p-6 text-right text-2xl font-black uppercase">Łączna wartość zamówienia:</td>
+                                    <td className="p-6 text-right text-4xl font-black text-amber-950">{total.toFixed(2)} PLN</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <div className="mt-20 grid grid-cols-2 gap-10">
+                            <div className="p-8 bg-stone-50 rounded-[3rem] border-l-[16px] border-orange-500 italic">
+                                <p className="font-black mb-2 uppercase text-sm underline decoration-orange-500 decoration-4">Warunki handlowe:</p>
+                                <ul className="text-xs space-y-1 font-bold text-stone-600">
+                                    <li>• Ceny zawierają podatek VAT.</li>
+                                    <li>• Termin realizacji: 24-48h.</li>
+                                    <li>• Dostawa kurierem na terenie całego kraju.</li>
+                                    <li>• Darmowa dostawa od 400 zł.</li>
+                                </ul>
+                            </div>
+                            <div className="flex flex-col items-center justify-end border-b-2 border-dotted border-stone-300 pb-4">
+                                <p className="text-[10px] uppercase font-black text-stone-400 tracking-[0.3em]">Podpis i pieczęć wystawcy</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
