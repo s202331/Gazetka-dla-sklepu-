@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Coffee, ShoppingCart, User, Printer, Check, Trash2, Search, Zap, Filter, Utensils, Cookie } from 'lucide-react';
+import { Coffee, ShoppingCart, User, Printer, Check, Trash2, Search, Zap, Filter, Utensils, Cookie, Plus, Minus, X } from 'lucide-react';
 
 const ALL_PRODUCTS = [
   // Kawa Ziarnista
@@ -55,7 +55,7 @@ const ALL_PRODUCTS = [
   id: 107,
   name: "Caffe Cagliari Gran Caffe 500g",
   category: "Kawa Ziarnista",
-  price: 49.90, // ➡️ możesz zmienić cenę jeśli chcesz inną
+  price: 49.90,
   img: "https://a.allegroimg.com/s720/113053/254b8b0d4cd1a77e8f8c1837d083/Kawa-ziarnista-Arabica-Caffe-Cagliari-Gran-Caffe-kawa-ziarnista-500-g",
   desc: "Aromatyczna kawa ziarnista Arabica Caffe Cagliari Gran Caffe 500 g."
 },
@@ -63,7 +63,7 @@ const ALL_PRODUCTS = [
   id: 108,
   name: "MEO Bio Intense 500g",
   category: "Kawa Ziarnista",
-  price: 79.90, // możesz dopasować cenę jeśli chcesz
+  price: 79.90,
   img: "https://a.allegroimg.com/s720/116a26/a8bcef9a4068a68368f355275d27/MEO-Bio-Intense-100-Arabica-500-g-kawa-ziarnista",
   desc: "Organiczna kawa ziarnista MEO Bio Intense 100% Arabica 500g."
 },
@@ -71,7 +71,7 @@ const ALL_PRODUCTS = [
   id: 109,
   name: "Kawa ziarnista Arabica Malongo Petits Producteurs 500g",
   category: "Kawa Ziarnista",
-  price: 109.90, // możesz dopasować cenę
+  price: 109.90,
   img: "https://a.allegroimg.com/s720/11a7f1/078b01bd453bb1b416855c696b3d/Kawa-ziarnista-Arabica-Malongo-Petits-Producteurs-500-g",
   desc: "Arabica z certyfikatem sprawiedliwego handlu – Malongo Petits Producteurs 500 g."
 },
@@ -130,7 +130,7 @@ const ALL_PRODUCTS = [
 { id: 502, name: "Kakao Nesquik 1000g", category: "Spiżarnia i Inne", price: 59.00, img: "https://a.allegroimg.com/s720/11cc37/d391f7a440899bcd9298421196a0/Kakao-Nesquik-1000-g", desc: "Ulubiony napój kakaowy dzieci i dorosłych w dużym, ekonomicznym opakowaniu." },
 { id: 503, name: "Kakao Van Houten 255g", category: "Spiżarnia i Inne", price: 31.50, img: "https://a.allegroimg.com/s720/11caf5/bf9aaed3432685084058d2f65945/Kakao-Van-Houten-255-g", desc: "Tradycyjne holenderskie kakao o głębokim smaku i ciemnej barwie." },
 { id: 504, name: "Kakao Van Houten 250g", category: "Spiżarnia i Inne", price: 30.95, img: "https://a.allegroimg.com/s720/1131da/3a25e6a649b68e347eb48291f8b7/Kakao-Van-Houten-250-g", desc: "Klasyczne kakao w proszku, doskonałe do wypieków i picia." },
-{ id: 505, name: "Czekolada mleczna do picia Nestle 500g", category: "Spiżarnia i Inne", price: 29.00, img: "https://a.allegroimg.com/s720/11a5af/b098cfd24c9f9172cab755e5d6ed/Czekolada-mleczna-do-picia-Nestle-500-g", desc: "Rozpuszczalna czekolada mleczna o kremowej konsystencji." },
+{ id: 505, name: "Czekolada mleczna do picia Nestle 500g", category: "Spiżarnia i Inne", price: 29.00, img: "https://a.allegroimg.com/s720/11a5af/b098cfd24c9f9172cab755e5d6ed/Czekolada mleczna do picia Nestle 500 g", desc: "Rozpuszczalna czekolada mleczna o kremowej konsystencji." },
 { id: 506, name: "Nesquik francuskie kakao 490g (FR)", category: "Spiżarnia i Inne", price: 32.00, img: "https://a.allegroimg.com/s720/117095/44e267524cd6b84aa25f422384bb/Nesquik-francuskie-kakao-490-g-FR", desc: "Oryginalny Nesquik z rynku francuskiego, wyjątkowy profil smakowy." },
 { id: 507, name: "Nesquik napój kakaowy 500g (IT)", category: "Spiżarnia i Inne", price: 32.00, img: "https://a.allegroimg.com/s720/1120d1/04801b7645adbf332ca39de65acc/NESTLE-Nesquik-napoj-kakaowy-500-g-IT", desc: "Klasyczny Nesquik sprowadzany z Włoch." },
 { id: 508, name: "Equador kakao ciemne 250g (bez cukru)", category: "Spiżarnia i Inne", price: 28.50, img: "https://a.allegroimg.com/s720/119522/75a759ed4797a1f76078e91810bb/Equador-kakao-ciemne-w-proszku-250-g-bez-cukru", desc: "Wysokiej jakości ciemne kakao bez dodatku cukru, intensywne i zdrowe." },
@@ -149,6 +149,12 @@ const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Wszystkie");
   const [showOffer, setShowOffer] = useState(false);
+  const [toast, setToast] = useState(null);
+
+  const showFeedback = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 2000);
+  };
 
   const addToCart = (product) => {
     const existing = cart.find(item => item.id === product.id);
@@ -157,10 +163,28 @@ const App = () => {
     } else {
       setCart([...cart, { ...product, qty: 1 }]);
     }
+    showFeedback(`Dodano: ${product.name}`);
+  };
+
+  const updateQty = (id, delta) => {
+    setCart(prev => prev.map(item => {
+      if (item.id === id) {
+        const newQty = Math.max(0, item.qty + delta);
+        return { ...item, qty: newQty };
+      }
+      return item;
+    }).filter(item => item.qty > 0));
   };
 
   const removeFromCart = (id) => {
     setCart(cart.filter(item => item.id !== id));
+  };
+
+  const clearCart = () => {
+    if (cart.length > 0) {
+      setCart([]);
+      showFeedback("Wyczyszczono koszyk");
+    }
   };
 
   const filteredProducts = ALL_PRODUCTS.filter(p => {
@@ -173,6 +197,13 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-stone-50 font-sans text-slate-900">
+      {/* Feedback Toast */}
+      {toast && (
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 bg-amber-900 text-white px-6 py-3 rounded-full shadow-2xl font-bold animate-bounce border-2 border-orange-500 text-sm">
+          {toast}
+        </div>
+      )}
+
       {/* Header */}
       <header className="bg-amber-900 text-white p-6 shadow-lg sticky top-0 z-20 no-print">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
@@ -204,7 +235,7 @@ const App = () => {
               <ShoppingCart size={24} />
               {cart.length > 0 && (
                 <span className="absolute -top-1 -right-1 bg-white text-orange-600 text-[10px] font-black px-2 py-0.5 rounded-full shadow-md">
-                  {cart.length}
+                  {cart.reduce((a, b) => a + b.qty, 0)}
                 </span>
               )}
             </button>
@@ -245,12 +276,12 @@ const App = () => {
             {filteredProducts.map(product => (
               <div key={product.id} className="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden hover:shadow-xl transition-all group border-b-4 border-b-stone-100 flex flex-col">
                <div className="h-40 bg-white flex items-center justify-center overflow-hidden">
-  <img
-    src={product.img}
-    alt={product.name}
-    className="h-full w-full object-contain p-4"
-  />
-</div>
+                <img
+                  src={product.img}
+                  alt={product.name}
+                  className="h-full w-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
                 <div className="p-5 flex flex-grow flex-col">
                   <span className="text-[10px] font-black text-orange-600 bg-orange-50 px-2.5 py-1 rounded-full mb-3 inline-block uppercase tracking-widest">
                     {product.category}
@@ -267,7 +298,7 @@ const App = () => {
                       onClick={() => addToCart(product)}
                       className="bg-amber-900 hover:bg-orange-600 text-white p-3 rounded-xl transition-all shadow-md active:scale-90"
                     >
-                      <Check size={20} />
+                      <Plus size={20} />
                     </button>
                   </div>
                 </div>
@@ -278,31 +309,44 @@ const App = () => {
 
         {/* Sidebar: Selection Only */}
         <aside className={`${showOffer ? 'block' : 'hidden'} lg:block lg:w-96 space-y-6`}>
-          <div className="bg-amber-950 text-white rounded-3xl shadow-2xl p-6 sticky top-32 border-b-8 border-orange-600 no-print">
-            <h3 className="text-lg font-black mb-6 flex items-center gap-2 border-b border-amber-900 pb-3 uppercase italic">
-              <ShoppingCart size={22} className="text-orange-500" /> Twoja Gazetka
-            </h3>
+          <div className="bg-amber-950 text-white rounded-3xl shadow-2xl p-6 sticky top-32 border-b-8 border-orange-600 no-print min-h-[400px] flex flex-col">
+            <div className="flex justify-between items-center mb-6 border-b border-amber-900 pb-3">
+              <h3 className="text-lg font-black flex items-center gap-2 uppercase italic">
+                <ShoppingCart size={22} className="text-orange-500" /> Twoja Gazetka
+              </h3>
+              {cart.length > 0 && (
+                <button onClick={clearCart} className="text-[10px] uppercase font-bold text-amber-500 hover:text-red-400 transition-colors">
+                  Wyczyść
+                </button>
+              )}
+            </div>
             
             {cart.length === 0 ? (
-              <div className="py-12 text-center text-amber-500 opacity-60 italic">
+              <div className="flex-grow flex flex-col items-center justify-center py-12 text-center text-amber-500 opacity-60 italic">
+                <ShoppingCart size={48} className="mb-4 opacity-20" />
                 <p className="text-sm tracking-wide">Wybierz produkty z listy po lewej,<br/>aby stworzyć wycenę dla klienta.</p>
               </div>
             ) : (
               <>
-                <div className="max-h-[400px] overflow-y-auto mb-6 pr-2 scrollbar-thin scrollbar-thumb-amber-800">
+                <div className="flex-grow max-h-[500px] overflow-y-auto mb-6 pr-2 scrollbar-thin scrollbar-thumb-amber-800">
                   {cart.map(item => (
                     <div key={item.id} className="flex justify-between items-center py-4 border-b border-amber-900 last:border-0 group">
                       <div className="flex-grow min-w-0 pr-4">
                         <h4 className="text-sm font-bold text-white line-clamp-1 group-hover:text-orange-400 transition-colors">{item.name}</h4>
-                        <p className="text-[10px] text-amber-500 font-bold uppercase tracking-widest">{item.qty} szt. x {item.price.toFixed(2)} PLN</p>
+                        <p className="text-[10px] text-amber-500 font-bold uppercase tracking-widest">{item.price.toFixed(2)} PLN / szt.</p>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="font-black text-sm text-white">{(item.qty * item.price).toFixed(2)}</span>
+                        <div className="flex items-center bg-amber-900 rounded-lg p-1 border border-amber-800">
+                          <button onClick={() => updateQty(item.id, -1)} className="p-1 hover:text-orange-500"><Minus size={14}/></button>
+                          <span className="w-8 text-center text-xs font-black">{item.qty}</span>
+                          <button onClick={() => updateQty(item.id, 1)} className="p-1 hover:text-orange-500"><Plus size={14}/></button>
+                        </div>
+                        <span className="font-black text-sm text-white w-16 text-right">{(item.qty * item.price).toFixed(2)}</span>
                         <button 
                           onClick={() => removeFromCart(item.id)}
                           className="text-amber-700 hover:text-red-500 transition-colors"
                         >
-                          <Trash2 size={16} />
+                          <X size={16} />
                         </button>
                       </div>
                     </div>
@@ -342,7 +386,7 @@ const App = () => {
             <p className="text-sm text-stone-400 mt-2 italic font-serif">Wygenerowano dnia: {new Date().toLocaleDateString('pl-PL')}</p>
           </div>
           <div className="text-right">
-             <h2 className="text-2xl font-black text-amber-900 uppercase">Oferta Ofertowa</h2>
+             <h2 className="text-2xl font-black text-amber-900 uppercase">Oferta Handlowa</h2>
              <p className="text-sm text-stone-400">Numer ref: {Math.random().toString(36).substr(2, 9).toUpperCase()}</p>
           </div>
         </div>
