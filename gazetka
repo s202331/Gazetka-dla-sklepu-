@@ -43,15 +43,64 @@ const ALL_PRODUCTS = [
   img: "https://a.allegroimg.com/s720/116bdf/972b19a9404b84b37086cbbe4dc8/Kawa-ziarnista-Malongo-1000g-Arabika-Petits-Producteurs",
   desc: "Kawa ziarnista Arabika z certyfikatem sprawiedliwego handlu."
 },
-
+{
+  id: 106,
+  name: "Kawa ziarnista mieszana Vergnano Aroma Mio Robusto 1kg",
+  category: "Kawa Ziarnista",
+  price: 69.90,
+  img: "https://a.allegroimg.com/s720/11f36c/3b875da045989939d83487846418/Kawa-ziarnista-mieszana-Vergnano-Aroma-Mio-Robusto-1000-g",
+  desc: "Wyrazista mieszanka ziarnista Vergnano Aroma Mio Robusto."
+},
+{
+  id: 107,
+  name: "Caffe Cagliari Gran Caffe 500g",
+  category: "Kawa Ziarnista",
+  price: 49.90, // ➡️ możesz zmienić cenę jeśli chcesz inną
+  img: "https://a.allegroimg.com/s720/113053/254b8b0d4cd1a77e8f8c1837d083/Kawa-ziarnista-Arabica-Caffe-Cagliari-Gran-Caffe-kawa-ziarnista-500-g",
+  desc: "Aromatyczna kawa ziarnista Arabica Caffe Cagliari Gran Caffe 500 g."
+},
+{
+  id: 108,
+  name: "MEO Bio Intense 500g",
+  category: "Kawa Ziarnista",
+  price: 79.90, // możesz dopasować cenę jeśli chcesz
+  img: "https://a.allegroimg.com/s720/116a26/a8bcef9a4068a68368f355275d27/MEO-Bio-Intense-100-Arabica-500-g-kawa-ziarnista",
+  desc: "Organiczna kawa ziarnista MEO Bio Intense 100% Arabica 500g."
+},
+{
+  id: 109,
+  name: "Kawa ziarnista Arabica Malongo Petits Producteurs 500g",
+  category: "Kawa Ziarnista",
+  price: 109.90, // możesz dopasować cenę
+  img: "https://a.allegroimg.com/s720/11a7f1/078b01bd453bb1b416855c696b3d/Kawa-ziarnista-Arabica-Malongo-Petits-Producteurs-500-g",
+  desc: "Arabica z certyfikatem sprawiedliwego handlu – Malongo Petits Producteurs 500 g."
+},
   // Kawa Mielona
-  { id: 201, name: "illy Classico 100% Arabica 250g", category: "Kawa Mielona", price: 32.75, img: "🥫", desc: "Kultowa kawa mielona w puszce." },
-  { id: 202, name: "illy Moka Classico 250g", category: "Kawa Mielona", price: 34.45, img: "🇮🇹", desc: "Specjalnie mielona do kawiarek typu Moka." },
-  { id: 203, name: "Caffe Vergnano Granaroma 250g", category: "Kawa Mielona", price: 20.00, img: "📦", desc: "Wyrazista mieszanka o bogatym aromacie." },
-  { id: 204, name: "Lavazza Dek Classico (Bezkofeinowa) 250g", category: "Kawa Mielona", price: 26.90, img: "🌿", desc: "Pełny smak kawy bez kofeiny." },
-  { id: 205, name: "Segafredo Intermezzo 250g", category: "Kawa Mielona", price: 17.00, img: "🇮🇹", desc: "Klasyczna włoska kawa do codziennego picia." },
-  { id: 206, name: "Kimbo Espresso Napoletano 250g", category: "Kawa Mielona", price: 24.00, img: "🌋", desc: "Mocno palona, w stylu neapolitańskim." },
-  { id: 207, name: "illy Decaf (Bezkofeinowa) 250g", category: "Kawa Mielona", price: 32.00, img: "🍃", desc: "Najwyższej jakości Arabica bez kofeiny." },
+  { 
+  id: 201, 
+  name: "illy Classico 100% Arabica 250g", 
+  category: "Kawa Mielona", 
+  price: 32.75, 
+  img: "https://a.allegroimg.com/s720/11697d/f0797e874952929ca4d980eedda7/Kawa-mielona-illy-Moka-Classico-100-Arabika-250g", 
+  desc: "Kultowa kawa mielona w puszce." 
+},
+  { id: 203, name: "Caffe Vergnano Granaroma 250g", category: "Kawa Mielona", price: 20.00, img: "https://a.allegroimg.com/s128/1112ab/ae3f4937488bbd59b3601b813ac1/Kawa-mielona-Caffe-Vergnano-Granaroma-250-g-EAN-GTIN-8001800001961", desc: "Wyrazista mieszanka o bogatym aromacie." },
+  { id: 204, name: "Lavazza Dek Classico (Bezkofeinowa) 250g", category: "Kawa Mielona", price: 26.90, img: "https://a.allegroimg.com/s128/1116b1/523240f248fb8e1a0dd466987273/Kawa-mielona-bezkofeinowa-LAVAZZA-DEK-250g-wloska", desc: "Pełny smak kawy bez kofeiny." },
+  { id: 205, name: "Segafredo Intermezzo 250g", category: "Kawa Mielona", price: 17.00, img: "https://a.allegroimg.com/s720/1107b1/3f9f023c4df7aaf0f294665102e2/Kawa-mielona-Segafredo-Intermezzo-250g", desc: "Klasyczna włoska kawa do codziennego picia." },
+  { id: 206, name: "Kimbo Espresso Napoletano 250g", category: "Kawa Mielona", price: 24.00, img: "https://a.allegroimg.com/s720/11e40a/5fdab7ee4405939afca0356dbb33/Kimbo-Espresso-Napoletano-kawa-mielona-250g", desc: "Mocno palona, w stylu neapolitańskim." },
+  { 
+  id: 207, 
+  name: "illy Decaf (Bezkofeinowa) 250g", 
+  category: "Kawa Mielona", 
+  price: 32.00, 
+  img: "https://a.allegroimg.com/s720/11d129/a5b59e15483fa1fea7c325bd7bc0/Kawa-ziarnista-illy-Decaf-bezkofeinowa-250g", 
+  desc: "Najwyższej jakości Arabica bez kofeiny." 
+},
+{ id: 208, name: "Jacques Vabre Kitale Kenya 250g", category: "Kawa Mielona", price: 28.50, img: "https://a.allegroimg.com/s720/11ff87/7fb63ffc488188e935cdfe569bc5/Jacques-Vabre-Kitale-Kenya-250-g-kawa-mielona-100-arabika", desc: "Wyjątkowa 100% Arabika z Kenii o owocowych nutach." },
+{ id: 209, name: "Lavazza Crema e Gusto Ricco 250g", category: "Kawa Mielona", price: 24.50, img: "https://a.allegroimg.com/s720/11e31e/20b8cbad4e43ac96b29128e241fe/Lavazza-Crema-eGusto-Ricco-250g-Kawa-mielona-na-ryneek-zachodni-28-02-2026", desc: "Intensywna mieszanka o bogatym aromacie, przeznaczona na rynek zachodni." },
+{ id: 210, name: "Lavazza Il Mattino 250g", category: "Kawa Mielona", price: 21.50, img: "https://a.allegroimg.com/s720/03bfd8/31c3cd304d95927ba32a89c16107/Kawa-mielona-Lavazza-Il-Mattino-250-g", desc: "Zbalansowana kawa o aksamitnym smaku, idealna na poranek." },
+{ id: 211, name: "Motta Pregiato 100% Arabica 250g", category: "Kawa Mielona", price: 29.90, img: "https://a.allegroimg.com/s720/112007/1935bfe64558b5f515bad0d6c86c/Motta-Pregiato-kawa-mielona-100-Arabica-250-gr", desc: "Włoska kawa mielona klasy premium, czysta Arabica o szlachetnym aromacie." },
+{ id: 212, name: "Pellini No 42 Tradizionale 250g", category: "Kawa Mielona", price: 23.90, img: "https://a.allegroimg.com/original/1ec435/44d378fb46c5a4b1ecb0b07da0d1", desc: "Klasyczna włoska receptura Pellini, idealna do tradycyjnego parzenia." },
 
   // Kawa Rozpuszczalna / Inne
   { id: 301, name: "Nescafe Espresso Original 95g", category: "Rozpuszczalna / Instant", price: 33.99, img: "☕", desc: "Krótka, mocna kawa z aksamitną cremą." },
