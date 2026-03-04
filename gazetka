@@ -1,0 +1,341 @@
+import React, { useState, useEffect } from 'react';
+import { Coffee, ShoppingCart, User, Printer, Check, Trash2, Search, Zap, Filter, Utensils, Cookie } from 'lucide-react';
+
+const ALL_PRODUCTS = [
+  // Kawa Ziarnista
+ {
+  id: 101,
+  name: "Lavazza Qualita Rossa 1kg",
+  category: "Kawa Ziarnista",
+  price: 93.00,
+  img: "https://a.allegroimg.com/s720/110652/3294d12e471e80004df2bbaeccb2/Kawa-ziarnista-mieszana-Lavazza-Qualita-Rossa-1000-g",
+  desc: "Mieszanka Arabiki i Robusty o intensywnym smaku."
+},
+  {
+  id: 102,
+  name: "Motta Lounge Bar Classico 1kg",
+  category: "Kawa Ziarnista",
+  price: 68.00,
+  img: "https://a.allegroimg.com/s720/11961e/ea254ee344f9a25864d7ae785f9b/Motta-Lounge-Bar-Classico-kawa-ziarnista-1000-g",
+  desc: "Klasyczna włoska kawa ziarnista."
+},
+  {
+  id: 103,
+  name: "Pellini La Crema del Caffe 1kg",
+  category: "Kawa Ziarnista",
+  price: 59.90,
+  img: "https://a.allegroimg.com/s720/111b2c/cc37a22f4d2b89a252dbac1088a6/Kawa-ziarnista-Pellini-1000-g",
+  desc: "Wysoka zawartość kofeiny, idealna do ekspresów."
+},
+  {
+  id: 104,
+  name: "Lavazza Qualita Oro 1kg",
+  category: "Kawa Ziarnista",
+  price: 68.90,
+  img: "https://a.allegroimg.com/s720/11094e/e37a02294faca6af5d94f50f4b77/Kawa-ziarnista-Arabica-Lavazza-Qualita-Oro-1000-g",
+  desc: "100% Arabica, słodki i aromatyczny smak."
+},
+  {
+  id: 105,
+  name: "Malongo Petits Producteurs 1kg",
+  category: "Kawa Ziarnista",
+  price: 190.00,
+  img: "https://a.allegroimg.com/s720/116bdf/972b19a9404b84b37086cbbe4dc8/Kawa-ziarnista-Malongo-1000g-Arabika-Petits-Producteurs",
+  desc: "Kawa ziarnista Arabika z certyfikatem sprawiedliwego handlu."
+},
+
+  // Kawa Mielona
+  { id: 201, name: "illy Classico 100% Arabica 250g", category: "Kawa Mielona", price: 32.75, img: "🥫", desc: "Kultowa kawa mielona w puszce." },
+  { id: 202, name: "illy Moka Classico 250g", category: "Kawa Mielona", price: 34.45, img: "🇮🇹", desc: "Specjalnie mielona do kawiarek typu Moka." },
+  { id: 203, name: "Caffe Vergnano Granaroma 250g", category: "Kawa Mielona", price: 20.00, img: "📦", desc: "Wyrazista mieszanka o bogatym aromacie." },
+  { id: 204, name: "Lavazza Dek Classico (Bezkofeinowa) 250g", category: "Kawa Mielona", price: 26.90, img: "🌿", desc: "Pełny smak kawy bez kofeiny." },
+  { id: 205, name: "Segafredo Intermezzo 250g", category: "Kawa Mielona", price: 17.00, img: "🇮🇹", desc: "Klasyczna włoska kawa do codziennego picia." },
+  { id: 206, name: "Kimbo Espresso Napoletano 250g", category: "Kawa Mielona", price: 24.00, img: "🌋", desc: "Mocno palona, w stylu neapolitańskim." },
+  { id: 207, name: "illy Decaf (Bezkofeinowa) 250g", category: "Kawa Mielona", price: 32.00, img: "🍃", desc: "Najwyższej jakości Arabica bez kofeiny." },
+
+  // Kawa Rozpuszczalna / Inne
+  { id: 301, name: "Nescafe Espresso Original 95g", category: "Rozpuszczalna / Instant", price: 33.99, img: "☕", desc: "Krótka, mocna kawa z aksamitną cremą." },
+  { id: 302, name: "Nescafe Bezkofeinowa 200g", category: "Rozpuszczalna / Instant", price: 44.80, img: "🌿", desc: "Kawa rozpuszczalna bez kofeiny." },
+  { id: 303, name: "Nescafe Special Filtre 200g", category: "Rozpuszczalna / Instant", price: 44.90, img: "🇫🇷", desc: "Importowana z Francji, subtelny smak." },
+  { id: 304, name: "Nestle Ricore Original 260g (z cykorią)", category: "Rozpuszczalna / Instant", price: 53.00, img: "🌱", desc: "Unikalne połączenie kawy i cykorii." },
+  { id: 305, name: "Nescafe Latte Kit Kat 273g", category: "Rozpuszczalna / Instant", price: 36.50, img: "🍫", desc: "Limitowana edycja o smaku batonika Kit Kat." },
+
+  // Słodycze i Kremy
+  { id: 401, name: "Krem pistacjowy Pisti 200g", category: "Słodycze i Kremy", price: 22.90, img: "🟢", desc: "Luksusowy krem z sycylijskich pistacji." },
+  { id: 402, name: "Czekolada mleczna Lindt 300g", category: "Słodycze i Kremy", price: 37.00, img: "🍫", desc: "Duża tabliczka alpejskiej czekolady." },
+  { id: 403, name: "Lindt Marcepan w gorzkiej czekoladzie 50g", category: "Słodycze i Kremy", price: 8.90, img: "🍬", desc: "Szlachetny marcepan w ciemnej polewie." },
+  { id: 404, name: "Baton Lindt z nadzieniem pistacjowym 38g", category: "Słodycze i Kremy", price: 7.95, img: "🥖", desc: "Mała przekąska z kremem pistacjowym." },
+  { id: 405, name: "Praliny Lindt Lindor Milk 200g", category: "Słodycze i Kremy", price: 24.50, img: "🍬", desc: "Rozpływające się w ustach kuleczki." },
+
+  // Kakao i Spiżarnia
+  { id: 501, name: "Kakao Nesquik 1000g", category: "Spiżarnia i Inne", price: 59.00, img: "🐰", desc: "Ulubiony napój kakaowy w dużym opakowaniu." },
+  { id: 502, name: "Kakao Van Houten 250g", category: "Spiżarnia i Inne", price: 30.95, img: "🍫", desc: "Tradycyjne kakao holenderskie." },
+  { id: 503, name: "Wanilia Bourbon Madagaskar 1 szt", category: "Spiżarnia i Inne", price: 3.99, img: "🌿", desc: "Aromatyczna laska wanilii." },
+  { id: 504, name: "Płyn Tesori d'Oriente Piżmo 760ml", category: "Spiżarnia i Inne", price: 13.00, img: "🧴", desc: "Kultowy włoski płyn do płukania." },
+  { id: 505, name: "Strianese Pomidory Pelati 2.5kg", category: "Spiżarnia i Inne", price: 25.00, img: "🍅", desc: "Włoskie pomidory bez skórki, puszka gastronomiczna." }
+];
+
+const CATEGORIES = ["Wszystkie", "Kawa Ziarnista", "Kawa Mielona", "Rozpuszczalna / Instant", "Słodycze i Kremy", "Spiżarnia i Inne"];
+
+const App = () => {
+  const [cart, setCart] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("Wszystkie");
+  const [showOffer, setShowOffer] = useState(false);
+
+  const addToCart = (product) => {
+    const existing = cart.find(item => item.id === product.id);
+    if (existing) {
+      setCart(cart.map(item => item.id === product.id ? { ...item, qty: item.qty + 1 } : item));
+    } else {
+      setCart([...cart, { ...product, qty: 1 }]);
+    }
+  };
+
+  const removeFromCart = (id) => {
+    setCart(cart.filter(item => item.id !== id));
+  };
+
+  const filteredProducts = ALL_PRODUCTS.filter(p => {
+    const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === "Wszystkie" || p.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const totalValue = cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
+
+  return (
+    <div className="min-h-screen bg-stone-50 font-sans text-slate-900">
+      {/* Header */}
+      <header className="bg-amber-900 text-white p-6 shadow-lg sticky top-0 z-20 no-print">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-3">
+            <div className="bg-white p-2 rounded-full text-amber-900 shadow-inner">
+              <Coffee size={32} />
+            </div>
+            <div>
+              <h1 className="text-2xl font-black tracking-tighter uppercase italic">Fotoastra Coffee</h1>
+              <p className="text-amber-200 text-xs font-bold tracking-widest uppercase opacity-80">Słodko gorzko</p>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-4 w-full md:w-auto">
+            <div className="relative flex-grow md:w-72">
+              <Search className="absolute left-3 top-2.5 text-amber-400" size={18} />
+              <input 
+                type="text" 
+                placeholder="Szukaj produktu (np. illy, Lindt)..." 
+                className="pl-10 pr-4 py-2 rounded-xl bg-amber-800 border-none text-white placeholder-amber-400 focus:ring-2 focus:ring-orange-400 w-full outline-none transition-all"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <button 
+              onClick={() => setShowOffer(!showOffer)}
+              className="relative p-2.5 bg-orange-600 hover:bg-orange-500 rounded-xl transition-all shadow-lg active:scale-95"
+            >
+              <ShoppingCart size={24} />
+              {cart.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-white text-orange-600 text-[10px] font-black px-2 py-0.5 rounded-full shadow-md">
+                  {cart.length}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Category Tabs */}
+      <nav className="bg-white border-b border-stone-200 sticky top-[88px] z-10 no-print">
+        <div className="max-w-7xl mx-auto px-4 overflow-x-auto flex gap-2 py-3 scrollbar-hide">
+          {CATEGORIES.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap ${
+                selectedCategory === cat 
+                ? 'bg-amber-900 text-white shadow-md' 
+                : 'text-stone-400 hover:bg-stone-100'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      </nav>
+
+      <main className="max-w-7xl mx-auto p-4 md:p-8 flex flex-col lg:flex-row gap-8">
+        
+        {/* Product Grid */}
+        <div className={`flex-grow ${showOffer ? 'lg:w-2/3' : 'w-full'}`}>
+          <div className="mb-8 border-l-4 border-orange-500 pl-4">
+            <h2 className="text-2xl font-black text-stone-800 uppercase tracking-tight">
+              {selectedCategory} <span className="text-stone-400 text-lg ml-2">({filteredProducts.length})</span>
+            </h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {filteredProducts.map(product => (
+              <div key={product.id} className="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden hover:shadow-xl transition-all group border-b-4 border-b-stone-100 flex flex-col">
+               <div className="h-40 bg-white flex items-center justify-center overflow-hidden">
+  <img
+    src={product.img}
+    alt={product.name}
+    className="h-full w-full object-contain p-4"
+  />
+</div>
+                <div className="p-5 flex flex-grow flex-col">
+                  <span className="text-[10px] font-black text-orange-600 bg-orange-50 px-2.5 py-1 rounded-full mb-3 inline-block uppercase tracking-widest">
+                    {product.category}
+                  </span>
+                  <h3 className="font-bold text-lg mb-1 text-stone-800 leading-tight">{product.name}</h3>
+                  <p className="text-stone-400 text-xs mb-6 h-8 line-clamp-2 leading-relaxed">{product.desc}</p>
+                  
+                  <div className="mt-auto pt-4 border-t border-stone-50 flex items-center justify-between">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-bold text-stone-300 uppercase">Cena Brutto</span>
+                      <span className="text-2xl font-black text-amber-950">{product.price.toFixed(2)} <small className="text-[10px] font-normal">PLN</small></span>
+                    </div>
+                    <button 
+                      onClick={() => addToCart(product)}
+                      className="bg-amber-900 hover:bg-orange-600 text-white p-3 rounded-xl transition-all shadow-md active:scale-90"
+                    >
+                      <Check size={20} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Sidebar: Selection Only */}
+        <aside className={`${showOffer ? 'block' : 'hidden'} lg:block lg:w-96 space-y-6`}>
+          <div className="bg-amber-950 text-white rounded-3xl shadow-2xl p-6 sticky top-32 border-b-8 border-orange-600 no-print">
+            <h3 className="text-lg font-black mb-6 flex items-center gap-2 border-b border-amber-900 pb-3 uppercase italic">
+              <ShoppingCart size={22} className="text-orange-500" /> Twoja Gazetka
+            </h3>
+            
+            {cart.length === 0 ? (
+              <div className="py-12 text-center text-amber-500 opacity-60 italic">
+                <p className="text-sm tracking-wide">Wybierz produkty z listy po lewej,<br/>aby stworzyć wycenę dla klienta.</p>
+              </div>
+            ) : (
+              <>
+                <div className="max-h-[400px] overflow-y-auto mb-6 pr-2 scrollbar-thin scrollbar-thumb-amber-800">
+                  {cart.map(item => (
+                    <div key={item.id} className="flex justify-between items-center py-4 border-b border-amber-900 last:border-0 group">
+                      <div className="flex-grow min-w-0 pr-4">
+                        <h4 className="text-sm font-bold text-white line-clamp-1 group-hover:text-orange-400 transition-colors">{item.name}</h4>
+                        <p className="text-[10px] text-amber-500 font-bold uppercase tracking-widest">{item.qty} szt. x {item.price.toFixed(2)} PLN</p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="font-black text-sm text-white">{(item.qty * item.price).toFixed(2)}</span>
+                        <button 
+                          onClick={() => removeFromCart(item.id)}
+                          className="text-amber-700 hover:text-red-500 transition-colors"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="bg-amber-900/50 p-5 rounded-2xl mb-6 border border-amber-800">
+                  <div className="flex justify-between items-center text-amber-100 font-black text-3xl italic">
+                    <span className="text-xs uppercase font-bold tracking-[0.2em] text-orange-500 not-italic">Suma:</span>
+                    <span>{totalValue.toFixed(2)} <small className="text-xs font-normal">PLN</small></span>
+                  </div>
+                </div>
+
+                <button 
+                  onClick={() => window.print()}
+                  className="w-full bg-orange-600 hover:bg-orange-500 text-white py-5 rounded-2xl font-black text-lg flex items-center justify-center gap-3 transition-all transform active:scale-95 shadow-xl shadow-orange-950/20"
+                >
+                  <Printer size={22} /> GENERUJ PDF
+                </button>
+              </>
+            )}
+          </div>
+        </aside>
+      </main>
+
+      {/* Print-Only Template (Professional Invoice Style) */}
+      <div className="hidden print:block p-16 bg-white min-h-screen text-black">
+        <div className="flex justify-between items-end border-b-8 border-amber-900 pb-12 mb-12">
+          <div>
+            <div className="flex items-center gap-6 mb-4">
+              <div className="bg-amber-900 text-white p-4 rounded-3xl">
+                <Coffee size={50} />
+              </div>
+              <h1 className="text-6xl font-black uppercase italic tracking-tighter text-amber-900">Fotoastra</h1>
+            </div>
+            <p className="text-xl font-bold text-orange-600">Specjalistyczna Oferta Handlowa B2B</p>
+            <p className="text-sm text-stone-400 mt-2 italic font-serif">Wygenerowano dnia: {new Date().toLocaleDateString('pl-PL')}</p>
+          </div>
+          <div className="text-right">
+             <h2 className="text-2xl font-black text-amber-900 uppercase">Oferta Ofertowa</h2>
+             <p className="text-sm text-stone-400">Numer ref: {Math.random().toString(36).substr(2, 9).toUpperCase()}</p>
+          </div>
+        </div>
+
+        <table className="w-full text-left">
+          <thead>
+            <tr className="bg-amber-900 text-white uppercase text-[10px] font-black tracking-[0.2em]">
+              <th className="p-5 rounded-l-2xl">Lp.</th>
+              <th className="p-5">Produkt / Specyfikacja</th>
+              <th className="p-5 text-center">Ilość</th>
+              <th className="p-5 text-right">Cena Jedn.</th>
+              <th className="p-5 text-right rounded-r-2xl">Wartość Brutto</th>
+            </tr>
+          </thead>
+          <tbody className="text-sm">
+            {cart.map((item, index) => (
+              <tr key={item.id} className="border-b border-stone-100">
+                <td className="p-6 text-stone-300 font-black italic">{index + 1}.</td>
+                <td className="p-6">
+                  <p className="font-black text-stone-900 text-lg">{item.name}</p>
+                  <p className="text-[10px] text-orange-600 font-bold uppercase tracking-widest">{item.category}</p>
+                </td>
+                <td className="p-6 text-center text-xl font-bold">{item.qty}</td>
+                <td className="p-6 text-right font-mono text-stone-400">{item.price.toFixed(2)} PLN</td>
+                <td className="p-6 text-right font-black text-2xl text-amber-950 font-mono">{(item.qty * item.price).toFixed(2)} PLN</td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr className="bg-stone-50 font-black">
+              <td colSpan="4" className="p-10 text-right text-xl uppercase tracking-widest text-stone-400 italic">Razem do zapłaty:</td>
+              <td className="p-10 text-right text-5xl text-amber-900 italic font-mono">{totalValue.toFixed(2)} <small className="text-lg not-italic font-bold">PLN</small></td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <div className="mt-20 grid grid-cols-2 gap-16">
+          <div className="p-8 border-l-8 border-orange-500 bg-stone-50 rounded-r-3xl">
+            <h4 className="font-black text-xs uppercase mb-4 tracking-widest text-amber-950">Warunki współpracy Fotoastra:</h4>
+            <ul className="text-[11px] text-stone-500 space-y-2 font-medium leading-relaxed">
+              <li>• Ceny w ofercie są cenami brutto (zawierają podatek VAT).</li>
+              <li>• Wszystkie kawy pochodzą z najświeższych partii importowych.</li>
+              <li>• Dostawa realizowana w ciągu 48h od potwierdzenia zamówienia.</li>
+              <li>• Darmowa przesyłka kurierska dla zamówień powyżej 1500 PLN.</li>
+            </ul>
+          </div>
+          <div className="flex flex-col items-center justify-end">
+             <div className="border-b-2 border-dotted border-stone-300 w-full mb-2"></div>
+             <p className="text-[10px] uppercase text-stone-400 font-black tracking-widest">Podpis i pieczęć wystawcy oferty</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="max-w-7xl mx-auto p-12 mt-12 border-t border-stone-200 text-center text-stone-400 no-print">
+        <p className="font-black uppercase tracking-[0.3em] text-amber-900/40 mb-2">Fotoastra Import</p>
+        <p className="text-xs">System generowania ofert B2B na podstawie asortymentu kawowego i słodyczy.</p>
+      </footer>
+    </div>
+  );
+};
+
+export default App;
